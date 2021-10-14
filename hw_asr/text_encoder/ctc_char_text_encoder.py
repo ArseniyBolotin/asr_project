@@ -20,7 +20,7 @@ class CTCCharTextEncoder(CharTextEncoder):
     def ctc_decode(self, inds: List[int]) -> str:
         res = ""
         for i, index in enumerate(inds):
-            ind = index.item()
+            ind = int(index)
             if i > 0 and ind == inds[i - 1] or ind == 0:
                 continue
             else:
