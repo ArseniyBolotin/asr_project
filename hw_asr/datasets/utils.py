@@ -26,7 +26,7 @@ def get_dataloaders(configs: ConfigParser, text_encoder: BaseTextEncoder):
         for ds in params["datasets"]:
             datasets.append(configs.init_obj(
                 ds, hw_asr.datasets, text_encoder=text_encoder, config_parser=configs,
-                wave_augs=wave_augs, spec_augs=spec_augs, limit=params["limit"]))
+                wave_augs=wave_augs, spec_augs=spec_augs, limit=ds.get("limit", None)))
         assert len(datasets)
         if len(datasets) > 1:
             dataset = ChainDataset(datasets)
