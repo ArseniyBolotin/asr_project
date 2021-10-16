@@ -14,7 +14,7 @@
     "spectrogram": []
   },
   "arch": {
-    "type": "CheckpointModel",
+    "type": "SimpleLSTM",
     "args": {
       "n_feats": 128
     }
@@ -39,7 +39,7 @@
   "optimizer": {
     "type": "Adam",
     "args": {
-      "lr": 3e-4
+      "lr": 1e-2
     }
   },
   "loss": {
@@ -61,13 +61,10 @@
     }
   ],
   "lr_scheduler": {
-    "type": "OneCycleLR",
+    "type": "StepLR",
     "args": {
-      "steps_per_epoch": 100,
-      "epochs": 50,
-      "anneal_strategy": "cos",
-      "max_lr": 4e-3,
-      "pct_start": 0.2
+      "gamma": 0.9,
+      "step_size": 500
     }
   },
   "trainer": {
@@ -79,7 +76,7 @@
     "early_stop": 100,
     "visualize": "wandb",
     "wandb_project": "asr_project",
-    "len_epoch": 1,
+    "len_epoch": 100,
     "grad_norm_clip": 10
   }
 }
