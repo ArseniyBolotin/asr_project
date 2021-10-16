@@ -86,6 +86,8 @@ class Trainer(BaseTrainer):
         for batch_idx, batch in enumerate(
                 tqdm(self.data_loader, desc="train", total=self.len_epoch)
         ):
+            # print("Train")
+            # print(sorted(list(path.split("/")[-1] for path in batch["audio_path"])))
             try:
                 batch = self.process_batch(
                     batch,
@@ -168,6 +170,8 @@ class Trainer(BaseTrainer):
                     desc="validation",
                     total=len(self.valid_data_loader),
             ):
+                # print("Validation")
+                # print(sorted(list(path.split("/")[-1] for path in batch["audio_path"])))
                 batch = self.process_batch(
                     batch,
                     is_train=False,

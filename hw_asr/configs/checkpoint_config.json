@@ -14,10 +14,9 @@
     "spectrogram": []
   },
   "arch": {
-    "type": "BaselineModel",
+    "type": "CheckpointModel",
     "args": {
-      "n_feats": 128,
-      "fc_hidden": 512
+      "n_feats": 128
     }
   },
   "data": {
@@ -31,14 +30,14 @@
             "part": "train-clean-100",
             "max_audio_length": 20.0,
             "max_text_length": 200
-          }
+          },
+          "limit" : 20
         }
-      ],
-      "limit": 20
+      ]
     }
   },
   "optimizer": {
-    "type": "SGD",
+    "type": "Adam",
     "args": {
       "lr": 3e-4
     }
@@ -80,7 +79,7 @@
     "early_stop": 100,
     "visualize": "wandb",
     "wandb_project": "asr_project",
-    "len_epoch": 100,
+    "len_epoch": 1,
     "grad_norm_clip": 10
   }
 }
