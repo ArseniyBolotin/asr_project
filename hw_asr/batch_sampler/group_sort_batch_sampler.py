@@ -15,8 +15,8 @@ class GroupLengthBatchSampler(Sampler):
 
     def __iter__(self):
         group_index = random.randint(0, self.groups - 1)
-        idx = random.sample(range(group_index * self.group_size, (group_index + 1) * self.group_size), k=self.batch_size)
-        yield torch.tensor(idx)
+        idx = random.sample(range(group_index * self.group_size, min((group_index + 1) * self.group_size, len(self.sorted_index))), k=self.batch_size)
+        yield idx
 
     def __len__(self):
         return math.ceil(len(self.sorted_index) / self.batch_size)
