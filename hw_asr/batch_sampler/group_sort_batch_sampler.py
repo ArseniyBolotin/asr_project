@@ -12,6 +12,8 @@ class GroupLengthBatchSampler(Sampler):
         self.batches_per_group = batches_per_group
         self.group_size = self.batch_size * self.batches_per_group
         self.groups = math.ceil(len(self.sorted_index) / self.group_size)
+        if len(self.sorted_index) % self.group_size < self.batch_size:
+            self.groups -= 1
 
     def __iter__(self):
         group_index = random.randint(0, self.groups - 1)
