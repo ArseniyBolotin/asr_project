@@ -1,8 +1,10 @@
 from typing import List, Tuple
 
+from ctcdecode import CTCBeamDecoder
 import torch
 
 from hw_asr.text_encoder.char_text_encoder import CharTextEncoder
+from hw_asr.utils.language_model import prepare_lm
 
 
 class CTCCharTextEncoder(CharTextEncoder):
@@ -10,6 +12,16 @@ class CTCCharTextEncoder(CharTextEncoder):
 
     def __init__(self, alphabet: List[str]):
         super().__init__(alphabet)
+        self.lm_path = prepare_lm()
+        self.alphabet = alphabet + [self.EMPTY_TOK]
+        self.ctc_beam_decoder = CTCBeamDecoder(
+            self.alphabet,
+            model_path=self.lm_path,
+            alpha=0.8,
+            beta=1.0,
+            beam_width=100,
+            log_probs_input=True
+        )
         self.ind2char = {
             0: self.EMPTY_TOK
         }
@@ -27,15 +39,13 @@ class CTCCharTextEncoder(CharTextEncoder):
                 res += self.ind2char[ind]
         return res
 
-    def ctc_beam_search(self, probs: torch.tensor, probs_length,
-                        beam_size: int = 100) -> List[Tuple[str, float]]:
+    def ctc_beam_search(self, log_probs: torch.tensor, log_probs_length) -> List[Tuple[str, float]]:
         """
         Performs beam search and returns a list of pairs (hypothesis, hypothesis probability).
         """
-        assert len(probs.shape) == 2
-        char_length, voc_size = probs.shape
+        assert len(log_probs_length.shape) == 2
+        char_length, voc_size = log_probs_length.shape
         assert voc_size == len(self.ind2char)
-        hypos = []
-        # TODO: your code here
-        raise NotImplementedError
-        return sorted(hypos, key=lambda x: x[1], reverse=True)
+        beam_results, beam_scores, timesteps, out_lens = self.ctc_beam_decoder.decode(log_probs)
+        print(''.join([self.ind2char[int(i)] for i in beam_results[0][0][:out_lens[0][0]]]))
+        return beam_results

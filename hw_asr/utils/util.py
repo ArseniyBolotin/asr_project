@@ -71,9 +71,10 @@ class MetricTracker:
         if is_train:
             self._data.total[key] = value * n
             self._data.average[key] = self._data.total[key]
-        self._data.total[key] += value * n
-        self._data.counts[key] += n
-        self._data.average[key] = self._data.total[key] / self._data.counts[key]
+        else:
+            self._data.total[key] += value * n
+            self._data.counts[key] += n
+            self._data.average[key] = self._data.total[key] / self._data.counts[key]
 
     def avg(self, key):
         return self._data.average[key]
