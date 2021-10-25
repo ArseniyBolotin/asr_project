@@ -5,7 +5,6 @@ from torch import Tensor
 
 from hw_asr.base.base_metric import BaseMetric
 from hw_asr.base.base_text_encoder import BaseTextEncoder
-from hw_asr.text_encoder import CTCCharTextEncoder
 from hw_asr.metric.utils import calc_wer
 
 
@@ -27,15 +26,22 @@ class ArgmaxWERMetric(BaseMetric):
 
 
 class BeamSearchWERMetric(BaseMetric):
-    def __init__(self, text_encoder: CTCCharTextEncoder, *args, **kwargs):
+    def __init__(self, text_encoder: BaseTextEncoder, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.text_encoder = text_encoder
 
     def __call__(self, log_probs: Tensor, text: List[str], *args, **kwargs):
         wers = []
-        predictions = self.text_encoder.ctc_beam_search(log_probs.cpu())
-        for log_prob_vec, target_text in zip(predictions, text):
-            if hasattr(self.text_encoder, "ctc_decode"):
+
+        if hasattr(self.text_encoder, "ctc_beam_search"):
+            predictions = log_probs.cpu()
+        else:
+            predictions = torch.argmax(log_probs.cpu(), dim=-1)
+
+        for log_prob_length, log_prob_vec, target_text in zip(kwargs['log_probs_length'], predictions, text):
+            if hasattr(self.text_encoder, "ctc_beam_search"):
+                pred_text = self.text_encoder.ctc_beam_search(log_prob_vec[:log_prob_length.item(), :].unsqueeze(0))
+            elif hasattr(self.text_encoder, "ctc_decode"):
                 pred_text = self.text_encoder.ctc_decode(log_prob_vec)
             else:
                 pred_text = self.text_encoder.decode(log_prob_vec)

@@ -152,6 +152,8 @@ class Trainer(BaseTrainer):
 
         metrics.update("loss", batch["loss"].item(), is_train)
         for met in self.metrics:
+            if is_train and ('beam' in met.name or 'Beam' in met.name):
+                continue
             metrics.update(met.name, met(**batch), is_train)
         return batch
 

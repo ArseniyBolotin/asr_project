@@ -14,14 +14,19 @@
     "spectrogram": []
   },
   "arch": {
-    "type": "SimpleLSTM",
+    "type": "QuartzNet",
     "args": {
       "n_feats": 128
     }
   },
   "data": {
     "train": {
-      "batch_size": 20,
+      "batch_sampler": {
+        "type": "GroupLengthBatchSampler",
+        "args": {
+          "batch_size": 20
+        }
+      },
       "num_workers": 5,
       "datasets": [
         {
@@ -54,9 +59,21 @@
       }
     },
     {
+      "type": "BeamSearchWERMetric",
+      "args": {
+        "name": "WER (beam search)"
+      }
+    },
+    {
       "type": "ArgmaxCERMetric",
       "args": {
         "name": "CER (argmax)"
+      }
+    },
+    {
+      "type": "BeamSearchCERMetric",
+      "args": {
+        "name": "CER (beam search)"
       }
     }
   ],
