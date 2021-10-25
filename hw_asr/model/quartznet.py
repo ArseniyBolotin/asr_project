@@ -1,23 +1,10 @@
 import torch.nn as nn
 from hw_asr.base import BaseModel
 
-class CBlock(nn.Module):
-        def __init__(self, input_channels, output_channels, kernel_size, stride=1, dilation=1, activation=True):
-            super(CBlock, self).__init__()
-            self.layers = nn.Sequential(
-                nn.Conv1d(input_channels, output_channels, kernel_size, stride=stride, dilation=dilation, groups=input_channels, padding = dilation * kernel_size // 2),
-                nn.BatchNorm1d(output_channels)
-            )
-            if activation:
-                self.layers.add_module('relu', nn.ReLU())
 
-        def forward(self, x):
-            x = self.layers(x)
-
-
-class BCell(nn.Module):
+class Cell(nn.Module):
     def __init__(self, input_channels, output_channels, kernel_size, stride=1, dilation=1, activation=True):
-        super(BCell, self).__init__()
+        super(Cell, self).__init__()
         self.layers = nn.Sequential(
             nn.Conv1d(input_channels, input_channels, kernel_size, stride=stride, dilation=dilation, groups=input_channels, padding = dilation * kernel_size // 2),
             nn.Conv1d(input_channels, output_channels, 1),
@@ -26,8 +13,8 @@ class BCell(nn.Module):
         if activation:
             self.layers.add_module('relu', nn.ReLU())
 
-        def forward(self, x):
-            x = self.layers(x)
+    def forward(self, x):
+        return self.layers(x)
 
 
 class BBlock(nn.Module):
@@ -42,7 +29,7 @@ class BBlock(nn.Module):
                 input_channels_modified = input_channels
             if index == block_size - 1:
                 activation = False
-            self.layers.append(BCell(input_channels_modified, output_channels, kernel_size, activation=activation))
+            self.layers.append(Cell(input_channels_modified, output_channels, kernel_size, activation=activation))
 
         self.layers = nn.Sequential(*self.layers)
         self.skip_connection = nn.Sequential(
@@ -53,6 +40,7 @@ class BBlock(nn.Module):
 
     def forward(self, x):
         return self.relu(self.layers(x) + self.skip_connection(x))
+
 
 class BGroup(nn.Module):
     def __init__(self, input_channels, output_channels, kernel_size, group_size=3):
@@ -75,15 +63,15 @@ class QuartzNet(BaseModel):
     def __init__(self, n_feats, n_class, *args, **kwargs):
         super().__init__(n_feats, n_class, *args, **kwargs)
         self.layers = nn.Sequential(
-            CBlock(n_feats, 256, kernel_size=33, stride=2),
+            Cell(n_feats, 256, kernel_size=33, stride=2),  # C1
             BGroup(256, 256, kernel_size=39),
             BGroup(256, 256, kernel_size=33),
             BGroup(256, 512, kernel_size=51),
             BGroup(512, 512, kernel_size=63),
             BGroup(512, 512, kernel_size=75),
-            CBlock(512, 512, kernel_size=87), # C2
-            CBlock(512, 1024, kernel_size=1), # C3
-            nn.Conv1d(1024, n_class, kernel_size=1, dilation=2) # C4
+            Cell(512, 512, kernel_size=87),  # C2
+            Cell(512, 1024, kernel_size=1),  # C3
+            nn.Conv1d(1024, n_class, kernel_size=1, dilation=2)  # C4
         )
 
     def forward(self, spectrogram, *args, **kwargs):
