@@ -24,7 +24,7 @@
       "batch_sampler": {
         "type": "GroupLengthBatchSampler",
         "args": {
-          "batch_size": 20
+          "batch_size": 32
         }
       },
       "num_workers": 5,
@@ -43,7 +43,7 @@
       "batch_sampler": {
         "type": "GroupLengthBatchSampler",
         "args": {
-          "batch_size": 20
+          "batch_size": 32
         }
       },
       "num_workers": 5,
@@ -62,7 +62,7 @@
   "optimizer": {
     "type": "Adam",
     "args": {
-      "lr": 1e-2
+      "lr": 4e-3
     }
   },
   "loss": {
@@ -96,10 +96,13 @@
     }
   ],
   "lr_scheduler": {
-    "type": "StepLR",
+    "type": "OneCycleLR",
     "args": {
-      "gamma": 0.9,
-      "step_size": 500
+      "steps_per_epoch": 100,
+      "epochs": 50,
+      "anneal_strategy": "cos",
+      "max_lr": 4e-2,
+      "pct_start": 0.2
     }
   },
   "trainer": {
