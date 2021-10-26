@@ -39,7 +39,7 @@ class CTCCharTextEncoder(CharTextEncoder):
                 res += self.ind2char[ind]
         return res
 
-    def ctc_beam_search(self, log_probs: torch.tensor, only_top_beam: bool = True) -> str:
+    def ctc_beam_search(self, log_probs: torch.tensor, only_top_beam: bool = True):
         beam_results, beam_scores, timesteps, out_lens = self.ctc_beam_decoder.decode(log_probs)
         if only_top_beam:
             return ''.join([self.ind2char[int(i)] for i in beam_results[0][0][:out_lens[0][0]]])
