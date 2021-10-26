@@ -57,6 +57,7 @@ def main(config, out_file):
             )
             batch["probs"] = batch["log_probs"].exp().cpu()
             batch["argmax"] = batch["probs"].argmax(-1)
+
             for i in range(len(batch["text"])):
                 argmax = batch["argmax"][i]
                 argmax = argmax[:int(batch["log_probs_length"][i])]
@@ -65,8 +66,7 @@ def main(config, out_file):
                         "ground_trurh": batch["text"][i],
                         "pred_text_argmax": text_encoder.ctc_decode(argmax),
                         "pred_text_beam_search": text_encoder.ctc_beam_search(
-                            batch["probs"], batch["log_probs_length"], beam_size=100
-                        )[:10],
+                            batch["log_probs"][i][:int(batch['log_probs_length'][i])].unsqueeze(0)),
                     }
                 )
     with Path(out_file).open("w") as f:
@@ -140,7 +140,7 @@ if __name__ == "__main__":
     # update with addition configs from `args.config` if provided
     if args.config is not None:
         with Path(args.config).open() as f:
-            config.config.upadte(json.load(f))
+            config.config.update(json.load(f))
 
     # if `--test-data-folder` was provided, set it as a default test set
     if args.test_data_folder is not None:
@@ -166,6 +166,5 @@ if __name__ == "__main__":
 
     assert config.config.get("data", {}).get("test", None) is not None
     config["data"]["test"]["batch_size"] = args.batch_size
-    config["data"]["test"]["n_jobs"] = args.n_jobs
 
     main(config, args.output)

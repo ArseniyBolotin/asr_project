@@ -39,10 +39,11 @@ class CTCCharTextEncoder(CharTextEncoder):
                 res += self.ind2char[ind]
         return res
 
-    def ctc_beam_search(self, log_probs: torch.tensor) -> str:
-        """
-        Performs beam search and returns a list of pairs (hypothesis, hypothesis probability).
-        """
+    def ctc_beam_search(self, log_probs: torch.tensor, only_top_beam: bool = True) -> str:
         beam_results, beam_scores, timesteps, out_lens = self.ctc_beam_decoder.decode(log_probs)
-        # print(''.join([self.ind2char[int(i)] for i in beam_results[0][0][:out_lens[0][0]]]))
-        return ''.join([self.ind2char[int(i)] for i in beam_results[0][0][:out_lens[0][0]]])
+        if only_top_beam:
+            return ''.join([self.ind2char[int(i)] for i in beam_results[0][0][:out_lens[0][0]]])
+        results = []
+        for index in range(beam_results.size(1)):
+            results.append(''.join([self.ind2char[int(i)] for i in beam_results[0][index][:out_lens[0][index]]]))
+        return results

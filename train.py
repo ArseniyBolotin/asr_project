@@ -3,6 +3,7 @@ import collections
 import warnings
 
 import numpy as np
+import random
 import torch
 
 import hw_asr.loss as module_loss
@@ -22,6 +23,7 @@ torch.manual_seed(SEED)
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 np.random.seed(SEED)
+random.seed(SEED)
 
 
 def main(config):
