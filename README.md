@@ -10,10 +10,18 @@ cd ctcdecode && pip install .
 
 ## Test
 
+Модель - https://drive.google.com/file/d/1pz9M9PGxlMgrWTyamwlR0049ofpUez0O/view?usp=sharing
+
+Конфиг - https://drive.google.com/file/d/1tFvww-3TeTjJzmSXPpqHuw8nvgAYV1BR/view?usp=sharing
+
+Запуск самого теста
+
 ```shell
 !python asr_project/test.py -c asr_project/hw_asr/configs/deepspeech_config.json -r best_model \
     -t asr_project/test_data -o test_result.json
 ```
+Весь запуск можно взять в [test.ipynb](https://github.com/ArseniyBolotin/asr_project/blob/e900dfdba02218b8959ad75d6d91d9ff536c62f7/test.ipynb)
+
 
 ## Recommended implementation order
 
