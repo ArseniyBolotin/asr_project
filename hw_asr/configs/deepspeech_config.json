@@ -10,8 +10,26 @@
     }
   },
   "augmentations": {
-    "wave": [],
-    "spectrogram": []
+    "wave": [
+      {
+          "type": "BackgroundNoise",
+          "args": {}
+      },
+      {
+          "type": "ColoredNoise",
+          "args": {}
+      }
+    ],
+    "spectrogram": [
+      {
+          "type": "FrequencyMasking",
+          "args": {}
+      },
+      {
+          "type": "TimeMasking",
+          "args": {}
+      }
+    ]
   },
   "arch": {
     "type": "DeepSpeech",
@@ -60,9 +78,9 @@
     }
   },
   "optimizer": {
-    "type": "Adam",
+    "type": "Adamw",
     "args": {
-      "lr": 4e-3
+      "lr": 3e-5
     }
   },
   "loss": {
@@ -101,8 +119,8 @@
       "steps_per_epoch": 100,
       "epochs": 50,
       "anneal_strategy": "cos",
-      "max_lr": 4e-2,
-      "pct_start": 0.2
+      "max_lr": 1e-4,
+      "pct_start": 0.1
     }
   },
   "trainer": {

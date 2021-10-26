@@ -8,21 +8,11 @@ import torch.nn.functional as F
 
 class MaskConv(nn.Module):
     def __init__(self, seq_module):
-        """
-        Adds padding to the output of the module based on the given lengths. This is to ensure that the
-        results of the model do not change when batch sizes change during inference.
-        Input needs to be in the shape of (BxCxDxT)
-        :param seq_module: The sequential module containing the conv stack.
-        """
+
         super(MaskConv, self).__init__()
         self.seq_module = seq_module
 
     def forward(self, x, lengths):
-        """
-        :param x: The input of size BxCxDxT
-        :param lengths: The actual length of each sequence in the batch
-        :return: Masked output from the module
-        """
         for module in self.seq_module:
             x = module(x)
             mask = torch.BoolTensor(x.size()).fill_(0)
@@ -97,7 +87,7 @@ class DeepSpeech(BaseModel):
     def forward(self, spectrogram, spectrogram_length, *args, **kwargs):
         x = spectrogram.unsqueeze(1).permute(0, 1, 3, 2)
         lengths = spectrogram_length.cpu().int()
-        output_lengths = self.transform_input_lengths(lengths)
+        output_lengths = self.get_seq_lens(lengths)
         x, output_lengths = self.conv(x, output_lengths)
 
         sizes = x.size()
@@ -111,9 +101,12 @@ class DeepSpeech(BaseModel):
         x = F.log_softmax(x)
         return x
 
-    def transform_input_lengths(self, input_length):
+    def get_seq_lens(self, input_length):
         seq_len = input_length
         for m in self.conv.modules():
             if type(m) == nn.modules.conv.Conv2d:
                 seq_len = ((seq_len + 2 * m.padding[1] - m.dilation[1] * (m.kernel_size[1] - 1) - 1) // m.stride[1] + 1)
         return seq_len.int()
+
+    def transform_input_lengths(self, input_lengths):
+        return input_lengths // 2
