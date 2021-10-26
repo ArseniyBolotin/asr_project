@@ -23,11 +23,15 @@
     "spectrogram": [
       {
           "type": "FrequencyMasking",
-          "args": {}
+          "args": {
+            "freq_mask_param": 10
+          }
       },
       {
           "type": "TimeMasking",
-          "args": {}
+          "args": {
+            "time_mask_param": 10
+          }
       }
     ]
   },
