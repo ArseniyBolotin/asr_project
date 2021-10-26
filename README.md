@@ -2,10 +2,10 @@
 
 ## Installation guide
 
-< Write your installation guide here >
-
 ```shell
-pip install -r ./requirements.txt
+pip install -r asr_project/requirements.txt
+git clone --recursive https://github.com/parlance/ctcdecode.git
+cd ctcdecode && pip install .
 ```
 
 ## Recommended implementation order
