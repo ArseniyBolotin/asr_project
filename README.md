@@ -8,6 +8,13 @@ git clone --recursive https://github.com/parlance/ctcdecode.git
 cd ctcdecode && pip install .
 ```
 
+## Test
+
+```shell
+!python asr_project/test.py -c asr_project/hw_asr/configs/deepspeech_config.json -r best_model \
+    -t asr_project/test_data -o test_result.json
+```
+
 ## Recommended implementation order
 
 You might be a little intimidated by the number of folders and classes. Try to follow this steps to gradually undestand
