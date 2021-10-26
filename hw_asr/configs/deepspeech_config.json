@@ -12,7 +12,7 @@
   "augmentations": {
     "wave": [
       {
-          "type": "BackgroundNoise",
+          "type": "PeakNormalization",
           "args": {}
       },
       {
