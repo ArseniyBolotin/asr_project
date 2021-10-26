@@ -2,10 +2,17 @@
 
 ## Installation guide
 
-< Write your installation guide here >
+```shell
+pip install -r asr_project/requirements.txt
+git clone --recursive https://github.com/parlance/ctcdecode.git
+cd ctcdecode && pip install .
+```
+
+## Test
 
 ```shell
-pip install -r ./requirements.txt
+!python asr_project/test.py -c asr_project/hw_asr/configs/deepspeech_config.json -r best_model \
+    -t asr_project/test_data -o test_result.json
 ```
 
 ## Recommended implementation order
