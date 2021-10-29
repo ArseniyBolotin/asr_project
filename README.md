@@ -17,8 +17,14 @@ cd ctcdecode && pip install .
 Запуск самого теста
 
 ```shell
-!python asr_project/test.py -c asr_project/hw_asr/configs/deepspeech_config.json -r best_model \
-    -t asr_project/test_data -o test_result.json
+git clone https://github.com/ArseniyBolotin/asr_project.git
+pip install -r asr_project/requirements.txt
+git clone --recursive https://github.com/parlance/ctcdecode.git
+cd ctcdecode && pip install .
+!gdown --id 1pz9M9PGxlMgrWTyamwlR0049ofpUez0O
+!gdown --id 1tFvww-3TeTjJzmSXPpqHuw8nvgAYV1BR
+!mv best_model_config.json config.json
+! python3 asr_project/test.py -r best_model -c config.json -o test_result.json
 ```
 Весь запуск можно взять в [test.ipynb](https://github.com/ArseniyBolotin/asr_project/blob/e900dfdba02218b8959ad75d6d91d9ff536c62f7/test.ipynb)
 
